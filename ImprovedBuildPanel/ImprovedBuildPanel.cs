@@ -8,9 +8,23 @@ namespace ImprovedBuildPanel
     public class ImprovedBuildPanel : MonoBehaviour
     {
 
-        private Vector2 panelPos;
-        private Vector2 panelSize;
-        private bool panelPosSet = false;
+        private static readonly string configPath = "ImprovedBuildPanelConfig.xml";
+        private Configuration config;
+
+        private void LoadConfig()
+        {
+            config = Configuration.Deserialize(configPath);
+            if (config == null)
+            {
+                config = new Configuration();
+                SaveConfig();
+            }
+        }
+
+        private void SaveConfig()
+        {
+            Configuration.Serialize(configPath, config);    
+        }
 
         private bool resizing = false;
         private Vector2 resizeHandle = Vector2.zero;
@@ -26,6 +40,8 @@ namespace ImprovedBuildPanel
             "RoadsLargePanel",
             "RoadsHighwayPanel",
             "RoadsIntersectionPanel",
+            "ZoningDefaultPanel",
+            "DistrictDefaultPanel",
             "ElectricityDefaultPanel",
             "WaterAndSewageDefaultPanel",
             "GarbageDefaultPanel",
@@ -50,21 +66,21 @@ namespace ImprovedBuildPanel
             //"WondersDefaultPanel"
         };
 
-        void FixPanel(UIPanel panel)
+        void UpdatePanel(UIPanel panel)
         {
             var tabContainer = panel.gameObject.transform.parent.GetComponent<UITabContainer>();
-            if (!panelPosSet)
+            if (!config.panelPositionSet)
             {
-                panelPos = tabContainer.relativePosition;
-                panelSize = tabContainer.size;
-                panelPosSet = true;
+                config.panelPosition = tabContainer.relativePosition;
+                config.panelSize = tabContainer.size;
+                config.panelPositionSet = true;
             }
 
             var scrollablePanel = panel.Find<UIScrollablePanel>("ScrollablePanel");
             var itemCount = scrollablePanel.transform.childCount;
 
-            tabContainer.relativePosition = panelPos;
-            tabContainer.size = panelSize;
+            tabContainer.relativePosition = config.panelPosition;
+            tabContainer.size = config.panelSize;
 
             var groupToolStrip = tabContainer.transform.parent.GetComponent<UIPanel>()
                 .Find<UITabstrip>("GroupToolstrip");
@@ -154,6 +170,7 @@ namespace ImprovedBuildPanel
                     resizeButton.color = Color.white;
                     resizing = false;
                     resizeHandle = Vector2.zero;
+                    SaveConfig();
                 };
             }
 
@@ -193,10 +210,11 @@ namespace ImprovedBuildPanel
                 {
                     moving = false;
                     moveHandle = Vector2.zero;
+                    SaveConfig();
                 };
             }
 
-            scrollablePanel.size = new Vector2(tabContainer.size.x - 32.0f, panelSize.y - 2.0f);
+            scrollablePanel.size = new Vector2(tabContainer.size.x - 32.0f, config.panelSize.y - 2.0f);
 
             if (itemCount == 0)
             {
@@ -226,6 +244,8 @@ namespace ImprovedBuildPanel
 
         void Start()
         {
+            LoadConfig();
+
             panels = new UIPanel[panelNames.Length];
             for (int i = 0; i < panelNames.Length; i++)
             {
@@ -255,7 +275,7 @@ namespace ImprovedBuildPanel
                 Vector2 pos = Input.mousePosition;
                 var delta = pos - resizeHandle;
                 resizeHandle = pos;
-                panelSize += new Vector2(delta.x, -delta.y);
+                config.panelSize += new Vector2(delta.x, -delta.y);
                 openPanel = null;
             }
             else if(moving)
@@ -263,7 +283,7 @@ namespace ImprovedBuildPanel
                 Vector2 pos = Input.mousePosition;
                 var delta = pos - moveHandle;
                 moveHandle = pos;
-                panelPos += new Vector2(delta.x, -delta.y);
+                config.panelPosition += new Vector2(delta.x, -delta.y);
                 openPanel = null;
             }
 
@@ -280,7 +300,7 @@ namespace ImprovedBuildPanel
 
                 if (openPanel != null)
                 {
-                    FixPanel(openPanel);
+                    UpdatePanel(openPanel);
                 }
             }
         }
