@@ -57,12 +57,12 @@ namespace ImprovedBuildPanel
             "BeautificationParksnPlazasPanel",
             "BeautificationPathsPanel",
             "BeautificationPropsPanel",
-            "MonumentCategory1Panel",
+            /*"MonumentCategory1Panel",
             "MonumentCategory2Panel",
             "MonumentCategory3Panel",
             "MonumentCategory4Panel",
             "MonumentCategory5Panel",
-            "MonumentCategory6Panel",
+            "MonumentCategory6Panel",*/
             //"WondersDefaultPanel"
         };
 
