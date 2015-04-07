@@ -69,6 +69,7 @@ namespace ImprovedBuildPanel
         void UpdatePanel(UIPanel panel)
         {
             var tabContainer = panel.gameObject.transform.parent.GetComponent<UITabContainer>();
+
             if (!config.panelPositionSet)
             {
                 config.panelPosition = tabContainer.relativePosition;
@@ -297,7 +298,32 @@ namespace ImprovedBuildPanel
                     var delta = pos - moveHandle;
                     moveHandle = pos;
                     config.panelPosition += new Vector2(delta.x, -delta.y);
-                    
+
+                    var tabContainer = openPanel.gameObject.transform.parent.GetComponent<UITabContainer>();
+                    tabContainer.relativePosition = config.panelPosition;
+
+                    if (tabContainer.absolutePosition.x + tabContainer.size.x >= Screen.width)
+                    {
+                        tabContainer.absolutePosition = new Vector3(Screen.width - tabContainer.size.x, tabContainer.absolutePosition.y);
+                    }
+
+                    if (tabContainer.absolutePosition.y + tabContainer.size.y >= Screen.height)
+                    {
+                        tabContainer.absolutePosition = new Vector3(tabContainer.absolutePosition.x, Screen.height - tabContainer.size.y);
+                    }
+
+                    if (tabContainer.absolutePosition.x <= 0.0f)
+                    {
+                        tabContainer.absolutePosition = new Vector3(0.0f, tabContainer.absolutePosition.y);
+                    }
+
+                    if (tabContainer.absolutePosition.y <= 0.0f)
+                    {
+                        tabContainer.absolutePosition = new Vector3(tabContainer.absolutePosition.x, 0.0f);
+                    }
+
+                    config.panelPosition = tabContainer.relativePosition;
+
                     openPanel = null;
                 }
 
@@ -316,6 +342,10 @@ namespace ImprovedBuildPanel
                     {
                         UpdatePanel(openPanel);
                     }
+                }
+                else
+                {
+                    openPanel.BringToFront();
                 }
             }
             catch (Exception ex)
