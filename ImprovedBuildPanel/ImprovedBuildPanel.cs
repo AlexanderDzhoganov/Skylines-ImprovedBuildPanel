@@ -262,46 +262,53 @@ namespace ImprovedBuildPanel
 
         void Update()
         {
-            if (openPanel != null)
+            try
             {
-                if (!openPanel.isVisible)
+                if (openPanel != null)
                 {
-                    openPanel = null;
-                }
-            }
-
-            if (resizing)
-            {
-                Vector2 pos = Input.mousePosition;
-                var delta = pos - resizeHandle;
-                resizeHandle = pos;
-                config.panelSize += new Vector2(delta.x, -delta.y);
-                openPanel = null;
-            }
-            else if(moving)
-            {
-                Vector2 pos = Input.mousePosition;
-                var delta = pos - moveHandle;
-                moveHandle = pos;
-                config.panelPosition += new Vector2(delta.x, -delta.y);
-                openPanel = null;
-            }
-
-            if (openPanel == null)
-            {
-                foreach (var panel in panels)
-                {
-                    if (panel.isVisible)
+                    if (!openPanel.isVisible)
                     {
-                        openPanel = panel;
-                        break;
+                        openPanel = null;
                     }
                 }
 
-                if (openPanel != null)
+                if (resizing)
                 {
-                    UpdatePanel(openPanel);
+                    Vector2 pos = Input.mousePosition;
+                    var delta = pos - resizeHandle;
+                    resizeHandle = pos;
+                    config.panelSize += new Vector2(delta.x, -delta.y);
+                    openPanel = null;
                 }
+                else if (moving)
+                {
+                    Vector2 pos = Input.mousePosition;
+                    var delta = pos - moveHandle;
+                    moveHandle = pos;
+                    config.panelPosition += new Vector2(delta.x, -delta.y);
+                    openPanel = null;
+                }
+
+                if (openPanel == null)
+                {
+                    foreach (var panel in panels)
+                    {
+                        if (panel.isVisible)
+                        {
+                            openPanel = panel;
+                            break;
+                        }
+                    }
+
+                    if (openPanel != null)
+                    {
+                        UpdatePanel(openPanel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
             }
         }
 
