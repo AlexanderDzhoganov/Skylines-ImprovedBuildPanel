@@ -82,6 +82,26 @@ namespace ImprovedBuildPanel
             tabContainer.relativePosition = config.panelPosition;
             tabContainer.size = config.panelSize;
 
+            if (tabContainer.absolutePosition.x + tabContainer.size.x >= Screen.width)
+            {
+                tabContainer.absolutePosition = new Vector2(Screen.width - tabContainer.size.x, tabContainer.absolutePosition.y);
+            }
+                    
+            if (tabContainer.absolutePosition.y + tabContainer.size.y >= Screen.height - 120.0f)
+            {
+                tabContainer.absolutePosition = new Vector2(tabContainer.absolutePosition.x, (Screen.height - 120.0f) - tabContainer.size.y);
+            }
+                    
+            if (tabContainer.absolutePosition.x <= 0.0f)
+            {
+                tabContainer.absolutePosition = new Vector2(0.0f, tabContainer.absolutePosition.y);
+            }
+
+            if (tabContainer.absolutePosition.y <= 0.0f)
+            {
+                tabContainer.absolutePosition = new Vector2(tabContainer.absolutePosition.x, 0.0f);
+            }
+
             var groupToolStrip = tabContainer.transform.parent.GetComponent<UIPanel>()
                 .Find<UITabstrip>("GroupToolstrip");
             if (groupToolStrip != null)
@@ -278,6 +298,17 @@ namespace ImprovedBuildPanel
                     var delta = pos - resizeHandle;
                     resizeHandle = pos;
                     config.panelSize += new Vector2(delta.x, -delta.y);
+
+                    if (config.panelSize.x <= 64.0f)
+                    {
+                        config.panelSize = new Vector2(64.0f, config.panelSize.y);
+                    }
+
+                    if (config.panelSize.y <= 64.0f)
+                    {
+                        config.panelSize = new Vector2(config.panelSize.x, 64.0f);
+                    }
+
                     openPanel = null;
                 }
                 else if (moving)
@@ -286,6 +317,7 @@ namespace ImprovedBuildPanel
                     var delta = pos - moveHandle;
                     moveHandle = pos;
                     config.panelPosition += new Vector2(delta.x, -delta.y);
+                    
                     openPanel = null;
                 }
 
